@@ -1,27 +1,25 @@
 <?php
 
 require_once __DIR__ . '/../vendor/autoload.php';
-
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
 
 $connection = new AMQPStreamConnection('localhost', 5672, 'guest', 'guest');
 $channel = $connection->channel();
 
-$channel->queue_declare('task_queue', false, true, false, false);
+$channel->exchange_declare('topic_logs', 'topic', false, false, false);
 
-$data = implode(' ', array_slice($argv, 1));
+$routing_key = isset($argv[1]) && !empty($argv[1]) ? $argv[1] : 'anonymous.info';
+$data = implode(' ', array_slice($argv, 2));
 if(empty($data)) $data = "Hello World!";
-$msg = new AMQPMessage($data,
-    array('delivery_mode' => 2) # make message persistent
-);
 
-$channel->basic_publish($msg, '', 'task_queue');
+$msg = new AMQPMessage($data);
 
-echo " [x] Sent ", $data, "\n";
+$channel->basic_publish($msg, 'topic_logs', $routing_key);
+
+echo " [x] Sent ",$routing_key,':',$data," \n";
 
 $channel->close();
 $connection->close();
 
-
-
+?>
