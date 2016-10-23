@@ -1,0 +1,12 @@
+{
+    "name": "laura.riera/rbbtmq",
+    "authors": [
+        {
+            "name": "laura.riera",
+            "email": "laura.riera@atrapalo.com"
+        }
+    ],
+    "require": {
+	"php-amqplib/php-amqplib": "2.5.*"
+	}
+}
